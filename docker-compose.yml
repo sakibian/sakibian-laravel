@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+    app:
+        image: php:7.4-fpm
+        container_name: sakibian_app
+        working_dir: /var/www
+        volumes:
+            - ./sakibian:/var/www/sakibian.com
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - laravel
+
+    web:
+        image: nginx:alpine
+        container_name: sakibian_web
+        working_dir: /var/www
+        volumes:
+            - ./sakibian:/var/www/sakibian.com
+            - ./nginx/conf.d:/etc/nginx/conf.d
+        ports:
+            - "2000:80"
+        networks:
+            - laravel
+
+    db:
+        image: mysql:5.7
+        container_name: sakibian_db
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: sakibian_db
+            MYSQL_USER: sakibian_user
+            MYSQL_PASSWORD: sakibian_password
+        volumes:
+            - dbdata:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - laravel
+
+networks:
+    laravel:
+
+volumes:
+    dbdata:
